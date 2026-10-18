@@ -135,7 +135,7 @@ function InquiryForm() {
     e.preventDefault();
     const fd = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
     const parsed = schema.safeParse(fd);
-    if (!parsed.success) return setError(parsed.error.issues[0].message);
+    if (!parsed.success) return setError(parsed.error.issues[0]?.message ?? "Please check the form");
     setError(null);
     setStatus("sending");
     const { error: dbErr } = await supabase.from("collaboration_inquiries").insert({
