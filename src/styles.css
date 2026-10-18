@@ -121,3 +121,14 @@
   -webkit-text-stroke: 1px var(--foreground);
   color: transparent;
 }
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+@layer base {
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+}

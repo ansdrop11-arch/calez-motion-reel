@@ -6,6 +6,10 @@ import reel from "@/assets/reel.mp4.asset.json";
 import p1 from "@/assets/p1.jpg";
 import p2 from "@/assets/p2.jpg";
 import p3 from "@/assets/p3.jpg";
+import secMotion from "@/assets/sec-motion.jpg";
+import secShorts from "@/assets/sec-shorts.jpg";
+import secMusic from "@/assets/sec-music.jpg";
+import secSongs from "@/assets/sec-songs.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,6 +36,68 @@ const reels = [
   { label: "Type Reel", src: reel.url, poster: p2 },
 ];
 
+type ShowcaseItem = { title: string; meta: string; poster: string };
+type ShowcaseSection = {
+  id: string;
+  title: string;
+  note: string;
+  ratio: "16x9" | "9x16";
+  items: ShowcaseItem[];
+};
+
+const showcases: ShowcaseSection[] = [
+  {
+    id: "motion",
+    title: "Motion Design",
+    note: "Landscape films and loops — brand, product and identity work.",
+    ratio: "16x9",
+    items: [
+      { title: "Chrome Bloom", meta: "Nova Audio · 0:24", poster: secMotion },
+      { title: "Phase Shift", meta: "Kestrel Labs · 0:18", poster: p1 },
+      { title: "Neon Drift", meta: "Pulse Festival · 0:30", poster: secMusic },
+      { title: "Soft Machines", meta: "Fizz Labs · 0:12", poster: p3 },
+    ],
+  },
+  {
+    id: "shorts",
+    title: "Shorts",
+    note: "Vertical cuts built for the feed — first-frame hooks, no sound needed.",
+    ratio: "9x16",
+    items: [
+      { title: "Drop Theory", meta: "0:15", poster: secShorts },
+      { title: "Hot Take", meta: "0:09", poster: secSongs },
+      { title: "Loop Research 04", meta: "0:12", poster: p2 },
+      { title: "Scroll Stop", meta: "0:20", poster: secShorts },
+      { title: "Type Rush", meta: "0:11", poster: p1 },
+      { title: "Night Mode", meta: "0:14", poster: p3 },
+    ],
+  },
+  {
+    id: "music",
+    title: "Music Videos",
+    note: "Full-length films and performance edits for artists and labels.",
+    ratio: "16x9",
+    items: [
+      { title: "Halo — Official Video", meta: "Sable · 3:12", poster: secMusic },
+      { title: "Undertow", meta: "Kite String · 2:48", poster: secMotion },
+      { title: "Static Bloom", meta: "Marlo Vane · 3:40", poster: p2 },
+    ],
+  },
+  {
+    id: "songs",
+    title: "Song Snippets",
+    note: "Hook-length vertical teasers — lyric, visualiser and countdown cuts.",
+    ratio: "9x16",
+    items: [
+      { title: "Halo — hook", meta: "0:14", poster: secSongs },
+      { title: "Undertow — bridge", meta: "0:19", poster: secShorts },
+      { title: "Static Bloom — chorus", meta: "0:16", poster: secSongs },
+      { title: "Paper Sun — verse", meta: "0:21", poster: p2 },
+      { title: "Lowlight — outro", meta: "0:13", poster: secShorts },
+    ],
+  },
+];
+
 const schema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
   email: z.string().trim().email("Invalid email").max(255),
@@ -46,8 +112,12 @@ function Index() {
     <main className="min-h-screen bg-background font-sans text-foreground">
       <header className="fixed inset-x-0 top-0 z-20 flex items-center justify-between border-b border-border bg-background/70 px-6 py-4 backdrop-blur">
         <a href="#top" className="font-display text-lg font-extrabold">calez<span className="text-primary">.</span></a>
-        <nav className="flex gap-6 text-sm text-muted-foreground">
+        <nav className="no-scrollbar flex max-w-[72vw] gap-5 overflow-x-auto text-sm text-muted-foreground">
           <a href="#reels" className="hover:text-foreground">Reels</a>
+          <a href="#motion" className="hover:text-foreground">Motion</a>
+          <a href="#shorts" className="hover:text-foreground">Shorts</a>
+          <a href="#music" className="hover:text-foreground">Music</a>
+          <a href="#songs" className="hover:text-foreground">Songs</a>
           <a href="#work" className="hover:text-foreground">Work</a>
           <a href="#contact" className="hover:text-foreground">Contact</a>
         </nav>
@@ -90,6 +160,10 @@ function Index() {
           ))}
         </div>
       </section>
+
+      {showcases.map((s) => (
+        <Showcase key={s.id} s={s} />
+      ))}
 
       <section id="work" className="mx-auto max-w-6xl px-6 py-24">
         <h2 className="mb-10 font-display text-4xl font-extrabold">Selected work</h2>
@@ -179,5 +253,64 @@ function InquiryForm() {
         {status === "sending" ? "Sending…" : "Send inquiry"}
       </button>
     </form>
+  );
+}
+
+function Showcase({ s }: { s: ShowcaseSection }) {
+  const wide = s.ratio === "16x9";
+  return (
+    <section id={s.id} className="border-t border-border px-6 py-24">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-10 flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-primary">{wide ? "16:9" : "9:16"}</p>
+            <h2 className="mt-3 font-display text-4xl font-extrabold">{s.title}</h2>
+          </div>
+          <p className="max-w-xs text-sm text-muted-foreground">{s.note}</p>
+        </div>
+
+        {wide ? (
+          <div className="grid gap-6 md:grid-cols-2">
+            {s.items.map((it) => (
+              <figure key={it.title} className="overflow-hidden rounded-lg border border-border bg-card">
+                <video
+                  src={reel.url}
+                  poster={it.poster}
+                  controls
+                  preload="none"
+                  playsInline
+                  className="aspect-video w-full bg-black object-cover"
+                />
+                <figcaption className="flex items-baseline justify-between gap-4 px-4 py-3 text-sm">
+                  <span className="font-medium">{it.title}</span>
+                  <span className="shrink-0 text-muted-foreground">{it.meta}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        ) : (
+          <ul className="no-scrollbar -mx-6 flex snap-x gap-4 overflow-x-auto px-6 pb-2">
+            {s.items.map((it) => (
+              <li key={it.title} className="w-[200px] shrink-0 snap-start sm:w-[240px]">
+                <figure className="overflow-hidden rounded-lg border border-border bg-card">
+                  <video
+                    src={reel.url}
+                    poster={it.poster}
+                    controls
+                    preload="none"
+                    playsInline
+                    className="aspect-[9/16] w-full bg-black object-cover"
+                  />
+                  <figcaption className="px-4 py-3 text-sm">
+                    <span className="block font-medium">{it.title}</span>
+                    <span className="text-muted-foreground">{it.meta}</span>
+                  </figcaption>
+                </figure>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </section>
   );
 }
